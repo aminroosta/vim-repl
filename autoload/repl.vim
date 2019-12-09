@@ -593,20 +593,13 @@ function! repl#SendLines(first, last) abort
         elseif has_key(g:repl_input_symbols, l:sn)
             call repl#Sends(add(getline(l:firstline, a:last), ''), g:repl_input_symbols[l:sn])
         else
-            let l:fl = getline(l:firstline)
-            let l:i = 0
-            while(l:i < strlen(l:fl) && l:fl[l:i] ==# ' ')
-                let l:i = l:i + 1
-            endwhile
-            for line in getline(l:firstline, a:last)
-                let l:deletespaceline = line[l:i:]
-                if repl#REPLWin32Return()
-                    exe "call term_sendkeys('" . g:repl_console_name . ''', l:deletespaceline . "\r\n")'
-                else
-                    exe "call term_sendkeys('" . g:repl_console_name . ''', l:deletespaceline . "\n")'
-                endif
-                exe 'call term_wait("' . g:repl_console_name . '", 50)'
-            endfor
+            let l:deletespaceline = join(getline(l:firstline, a:last), ' ')
+            if repl#REPLWin32Return()
+                exe "call term_sendkeys('" . g:repl_console_name . ''', l:deletespaceline . "\r\n")'
+            else
+                exe "call term_sendkeys('" . g:repl_console_name . ''', l:deletespaceline . "\n")'
+            endif
+            exe 'call term_wait("' . g:repl_console_name . '", 50)'
             if repl#REPLWin32Return()
                 exe "call term_sendkeys('" . g:repl_console_name . ''', "\r\n")'
             else
